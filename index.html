@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="origin-trial" content="AvcnlD3Jh74eZ6jq82HUr96gI1vygNstBwiSJAdv9I4zH+0grab5BJHIjLVz2QoZWgpgp+yKFnX7Iyhhd5IJSgkAAAB7eyJvcmlnaW4iOiJodHRwczovL3d3dy5ldWNsaWRlb24uY29tOjQ0MyIsImZlYXR1cmUiOiJVbnJlc3RyaWN0ZWRTaGFyZWRBcnJheUJ1ZmZlciIsImV4cGlyeSI6MTYzOTUyNjM5OSwiaXNTdWJkb21haW4iOnRydWV9">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>udSDK Esri Demo</title>
+
+    <link rel="stylesheet" href="https://samples.euclideon.com/api/arcgisjs/4.24/esri/themes/light/main.css" crossorigin />
+    <script src="https://js.arcgis.com/4.27/" crossorigin></script>
+    <!-- <script>
+      navigator.serviceWorker.register('/js/udSDKjs.worker.js');
+      navigator.serviceWorker.ready.then(console.log('Service Worker is running.'));
+    </script> -->
+    <script src="/js/udCloud_example.js"></script>
+
+    <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      #viewDiv {
+        display: flex;
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: stretch;
+      }
+
+      .viewPortal {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      #loginBox {
+        position: absolute;
+        bottom: 18px;
+        right: 12px;
+        padding: 12px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        display: none;
+      }
+
+      #loadingBox {
+        position: absolute;
+        top: 30px;
+        right: 50vw;
+        padding: 12px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        display: none;
+      }
+    </style>
+
+    <!-- A simple fragment shader -->
+    <script id="shader-fs" type="x-shader/x-fragment">#version 300 es
+      precision mediump float;
+      precision highp int;
+      
+      //Input Format
+      in highp vec2 v_uv;
+
+      uniform sampler2D u_texture;
+      uniform sampler2D u_depth;
+      
+      layout(location = 0) out highp vec4 out_var_SV_Target0;
+
+      void main()
+      {
+        vec4 col = texture(u_texture, v_uv);
+        float depth = texture(u_depth, v_uv).x;
+
+        out_var_SV_Target0 = vec4(col.zyx, 0.5);
+        gl_FragDepth = depth * 0.5 + 0.5;
+      }
+    </script>
+
+    <!-- A simple vertex shader -->
+    <script id="shader-vs" type="x-shader/x-vertex">#version 300 es
+      in vec2 aVertexPosition;
+      in vec2 aVertexUVs;
+      uniform sampler2D u_texture;
+
+      out vec2 v_uv;
+
+      // A magenta color for referencing
+      // Refer to line 311 to 315, we set a point to magenta color.
+      // And we will compare the magenta point with this vec4 magenta.
+      vec4 magenta = vec4(1.0, 0.0, 1.0, 1.0);
+      vec4 topLeft;
+
+      void main(void) {
+        // Correction work
+        topLeft = texture(u_texture, vec2(0.0, 0.0));
+        // We want to check if the magenta point is rendered in top left corner
+        // If not, flip it
+        if (topLeft == magenta)
+          v_uv = vec2(aVertexUVs.x, aVertexUVs.y);
+        else
+          v_uv = vec2(aVertexUVs.x, 1.0 - aVertexUVs.y);
+        gl_Position = vec4(aVertexPosition.xy, 0.0, 1.0);
+      }
+    </script>
+
+    <!-- Our application -->
+    <script>
+      var udSDKJSReady = false;
+
+      require([
+        "esri/Map",
+        "esri/views/SceneView",
+        "esri/views/3d/externalRenderers",
+        "esri/widgets/Home",
+        "esri/widgets/Search",
+        "esri/identity/OAuthInfo", 
+        "esri/identity/IdentityManager",
+        "esri/portal/Portal"
+      ], function(
+        Map,
+        SceneView,
+        externalRenderers,
+        Home,
+        Search,
+        OAuthInfo, 
+        esriId,
+        Portal
+      ) {
+        const info = new OAuthInfo({
+        // Swap this ID out with registered application ID
+        appId: "k62E5SU8wer2jVeU",
+        // Uncomment the next line and update if using your own portal
+        // portalUrl: "https://<host>:<port>/arcgis"
+        // Uncomment the next line to prevent the user's signed in state from being shared with other apps on the same domain with the same authNamespace value.
+        // authNamespace: "portal_oauth_inline",
+        flowType: "auto", // default that uses two-step flow
+        popup: true
+      });
+
+      esriId.registerOAuthInfos([info]);
+        var portal = new Portal({
+          url: 'https://favatvhrqrd0lu03.maps.arcgis.com/home/item.html?id=e2cd4045027f4d6cb2aa22a76e6c2a7d'
+        });
+        portal.authMode = "immediate";
+        portal.load().then(function() {
+          console.log(portal);
+        });
+        // Create the map and view
+        var map = new Map({
+          basemap: "topo-vector",
+          //basemap: "hybrid",
+          ground: "world-elevation"
+        });
+
+        var view3D = new SceneView({
+          container: "view3D",
+          map: map,
+          viewingMode: "global",
+          camera: {
+            position: {
+              x: 15881999.423488,
+              y: -2252934.434622,
+              z: 3974289.289277,
+              spatialReference: { wkid: 3857 }
+            },
+            heading: 0,
+            tilt: 0
+          }
+        });
+
+        var homeBtn = new Home({
+          view: view3D
+        });
+
+        var search = new Search({
+          view: view3D
+        });
+
+        // Add the home button to the top left corner of the view
+        view3D.ui.add(homeBtn, "top-left");
+        view3D.ui.add(search, "top-right");
+
+      });
+    </script>
+  </head>
+
+  <body>
+    <script>
+      const easyudSDKjs = document.createElement('script');
+      easyudSDKjs.src = '/js/euclideon/easyudSDKjs.js';
+      document.body.appendChild(easyudSDKjs);
+
+      const udSDKjs = document.createElement('script');
+      udSDKjs.src = '/js/euclideon/udSDKjs.js';
+      document.body.appendChild(udSDKjs);
+    </script>
+    <div id="viewDiv">
+      <div id="view3D" class="viewPortal"></div>
+    </div>
+    <div id="loginBox">
+        <span id="errorMessage" style="color: red;"></span>
+    </div>
+    <div id="loadingBox">
+      <label id="loading">Loading...</label>
+    </div>
+    <script>
+      function udSDKInit()
+      {
+        console.log("sebelum");
+        udSDKJS_RegisterShared();
+        var server = "https://udcloud.euclideon.com";
+        //"https://stg-ubu20.euclideon.com"
+       
+        udSDKJS_SetServerAddress(server);
+        
+        // login();
+      }
+    </script>
+    
+  </body>
+</html>
