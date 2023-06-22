@@ -6,13 +6,12 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <title>udSDK Esri Demo</title>
 
-    <link rel="stylesheet" href="https://samples.euclideon.com/api/arcgisjs/4.24/esri/themes/light/main.css" crossorigin />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/light/main.css" crossorigin />
     <script src="https://js.arcgis.com/4.27/" crossorigin></script>
     <!-- <script>
       navigator.serviceWorker.register('/js/udSDKjs.worker.js');
       navigator.serviceWorker.ready.then(console.log('Service Worker is running.'));
     </script> -->
-    <script src="/js/udCloud_example.js"></script>
 
     <style>
       html, body {
@@ -61,59 +60,8 @@
       }
     </style>
 
-    <!-- A simple fragment shader -->
-    <script id="shader-fs" type="x-shader/x-fragment">#version 300 es
-      precision mediump float;
-      precision highp int;
-      
-      //Input Format
-      in highp vec2 v_uv;
-
-      uniform sampler2D u_texture;
-      uniform sampler2D u_depth;
-      
-      layout(location = 0) out highp vec4 out_var_SV_Target0;
-
-      void main()
-      {
-        vec4 col = texture(u_texture, v_uv);
-        float depth = texture(u_depth, v_uv).x;
-
-        out_var_SV_Target0 = vec4(col.zyx, 0.5);
-        gl_FragDepth = depth * 0.5 + 0.5;
-      }
-    </script>
-
-    <!-- A simple vertex shader -->
-    <script id="shader-vs" type="x-shader/x-vertex">#version 300 es
-      in vec2 aVertexPosition;
-      in vec2 aVertexUVs;
-      uniform sampler2D u_texture;
-
-      out vec2 v_uv;
-
-      // A magenta color for referencing
-      // Refer to line 311 to 315, we set a point to magenta color.
-      // And we will compare the magenta point with this vec4 magenta.
-      vec4 magenta = vec4(1.0, 0.0, 1.0, 1.0);
-      vec4 topLeft;
-
-      void main(void) {
-        // Correction work
-        topLeft = texture(u_texture, vec2(0.0, 0.0));
-        // We want to check if the magenta point is rendered in top left corner
-        // If not, flip it
-        if (topLeft == magenta)
-          v_uv = vec2(aVertexUVs.x, aVertexUVs.y);
-        else
-          v_uv = vec2(aVertexUVs.x, 1.0 - aVertexUVs.y);
-        gl_Position = vec4(aVertexPosition.xy, 0.0, 1.0);
-      }
-    </script>
-
     <!-- Our application -->
     <script>
-      var udSDKJSReady = false;
 
       require([
         "esri/Map",
@@ -193,15 +141,6 @@
   </head>
 
   <body>
-    <script>
-      const easyudSDKjs = document.createElement('script');
-      easyudSDKjs.src = '/js/euclideon/easyudSDKjs.js';
-      document.body.appendChild(easyudSDKjs);
-
-      const udSDKjs = document.createElement('script');
-      udSDKjs.src = '/js/euclideon/udSDKjs.js';
-      document.body.appendChild(udSDKjs);
-    </script>
     <div id="viewDiv">
       <div id="view3D" class="viewPortal"></div>
     </div>
@@ -211,19 +150,6 @@
     <div id="loadingBox">
       <label id="loading">Loading...</label>
     </div>
-    <script>
-      function udSDKInit()
-      {
-        console.log("sebelum");
-        udSDKJS_RegisterShared();
-        var server = "https://udcloud.euclideon.com";
-        //"https://stg-ubu20.euclideon.com"
-       
-        udSDKJS_SetServerAddress(server);
-        
-        // login();
-      }
-    </script>
     
   </body>
 </html>
