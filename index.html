@@ -2,11 +2,21 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="origin-trial" content="AvcnlD3Jh74eZ6jq82HUr96gI1vygNstBwiSJAdv9I4zH+0grab5BJHIjLVz2QoZWgpgp+yKFnX7Iyhhd5IJSgkAAAB7eyJvcmlnaW4iOiJodHRwczovL3d3dy5ldWNsaWRlb24uY29tOjQ0MyIsImZlYXR1cmUiOiJVbnJlc3RyaWN0ZWRTaGFyZWRBcnJheUJ1ZmZlciIsImV4cGlyeSI6MTYzOTUyNjM5OSwiaXNTdWJkb21haW4iOnRydWV9">
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta
+      http-equiv="origin-trial"
+      content="AvcnlD3Jh74eZ6jq82HUr96gI1vygNstBwiSJAdv9I4zH+0grab5BJHIjLVz2QoZWgpgp+yKFnX7Iyhhd5IJSgkAAAB7eyJvcmlnaW4iOiJodHRwczovL3d3dy5ldWNsaWRlb24uY29tOjQ0MyIsImZlYXR1cmUiOiJVbnJlc3RyaWN0ZWRTaGFyZWRBcnJheUJ1ZmZlciIsImV4cGlyeSI6MTYzOTUyNjM5OSwiaXNTdWJkb21haW4iOnRydWV9"
+    />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
     <title>udSDK Esri Demo</title>
 
-    <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/light/main.css" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.27/esri/themes/light/main.css"
+      crossorigin
+    />
     <script src="https://js.arcgis.com/4.27/" crossorigin></script>
     <!-- <script>
       navigator.serviceWorker.register('/js/udSDKjs.worker.js');
@@ -14,7 +24,8 @@
     </script> -->
 
     <style>
-      html, body {
+      html,
+      body {
         padding: 0;
         margin: 0;
         height: 100%;
@@ -62,50 +73,50 @@
 
     <!-- Our application -->
     <script>
-
       require([
         "esri/Map",
         "esri/views/SceneView",
         "esri/views/3d/externalRenderers",
         "esri/widgets/Home",
         "esri/widgets/Search",
-        "esri/identity/OAuthInfo", 
+        "esri/identity/OAuthInfo",
         "esri/identity/IdentityManager",
-        "esri/portal/Portal"
-      ], function(
+        "esri/portal/Portal",
+      ], function (
         Map,
         SceneView,
         externalRenderers,
         Home,
         Search,
-        OAuthInfo, 
+        OAuthInfo,
         esriId,
         Portal
       ) {
         const info = new OAuthInfo({
-        // Swap this ID out with registered application ID
-        appId: "k62E5SU8wer2jVeU",
-        // Uncomment the next line and update if using your own portal
-        // portalUrl: "https://<host>:<port>/arcgis"
-        // Uncomment the next line to prevent the user's signed in state from being shared with other apps on the same domain with the same authNamespace value.
-        // authNamespace: "portal_oauth_inline",
-        flowType: "auto", // default that uses two-step flow
-        popup: true
-      });
+          // Swap this ID out with registered application ID
+          appId: "k62E5SU8wer2jVeU",
+          // Uncomment the next line and update if using your own portal
+          // portalUrl: "https://<host>:<port>/arcgis"
+          // Uncomment the next line to prevent the user's signed in state from being shared with other apps on the same domain with the same authNamespace value.
+          // authNamespace: "portal_oauth_inline",
+          // flowType: "auto", // default that uses two-step flow
+          popup: true,
+          // popupCallbackUrl: "oauth-callback.html",
+        });
 
-      esriId.registerOAuthInfos([info]);
+        esriId.registerOAuthInfos([info]);
         var portal = new Portal({
-          url: 'https://favatvhrqrd0lu03.maps.arcgis.com/home/item.html?id=e2cd4045027f4d6cb2aa22a76e6c2a7d'
+          url: "https://favatvhrqrd0lu03.maps.arcgis.com/home/item.html?id=78fa0a17585f42de8f9fec758dc69697",
         });
         portal.authMode = "immediate";
-        portal.load().then(function() {
+        portal.load().then(function () {
           console.log(portal);
         });
         // Create the map and view
         var map = new Map({
-          basemap: "topo-vector",
+          basemap: "topo",
           //basemap: "hybrid",
-          ground: "world-elevation"
+          ground: "world-elevation",
         });
 
         var view3D = new SceneView({
@@ -117,25 +128,24 @@
               x: 15881999.423488,
               y: -2252934.434622,
               z: 3974289.289277,
-              spatialReference: { wkid: 3857 }
+              spatialReference: { wkid: 3857 },
             },
             heading: 0,
-            tilt: 0
-          }
+            tilt: 0,
+          },
         });
 
         var homeBtn = new Home({
-          view: view3D
+          view: view3D,
         });
 
         var search = new Search({
-          view: view3D
+          view: view3D,
         });
 
         // Add the home button to the top left corner of the view
         view3D.ui.add(homeBtn, "top-left");
         view3D.ui.add(search, "top-right");
-
       });
     </script>
   </head>
@@ -145,11 +155,10 @@
       <div id="view3D" class="viewPortal"></div>
     </div>
     <div id="loginBox">
-        <span id="errorMessage" style="color: red;"></span>
+      <span id="errorMessage" style="color: red"></span>
     </div>
     <div id="loadingBox">
       <label id="loading">Loading...</label>
     </div>
-    
   </body>
 </html>
